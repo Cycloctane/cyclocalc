@@ -3,8 +3,8 @@ TARGET = cyclocalc
 TEST_TARGET = $(TARGET)_test
 SRC = lexer.c calc.c main.c
 TEST_SRC = lexer.c calc.c test_cyclocalc.c
-CFLAGS = -Wall
-TEST_FLAGS = $(CFLAGS) -g -fsanitize=address -std=c99
+CFLAGS = -Wall -Werror -O2
+TEST_FLAGS = -Wall -Werror -Og -g -fsanitize=address -std=c99
 
 $(TARGET):
 	$(CC) $(CFLAGS) $(SRC) -o $@

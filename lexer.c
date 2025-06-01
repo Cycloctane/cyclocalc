@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline bool is_num(char *s) { return s && *s <= '9' && *s >= '0'; }
+static inline bool is_num(char c) { return c <= '9' && c >= '0'; }
 
 static int read_num(char **s_addr) {
     char *s = *s_addr, *base = *s_addr;
-    while (is_num(s))
-        s++;
+    while (is_num(*s))
+        ++s;
     short n_digit = s - base;
     char n_str[n_digit + 1];
     memcpy(n_str, base, n_digit);
@@ -34,32 +34,34 @@ TokenStream *tokenize(char *s) {
     bool expect_num = true;
     int paren_count = 0;
     while (*s_head) {
-        while (*s_head == 0x20)
-            s_head++;
+        while (*s_head == ' ')
+            ++s_head;
         if (!*s_head)
             break;
 
         TokenType type;
-        int val;
-        if (expect_num) {
-            if (*s_head == '(') {
-                type = ParenLeft;
-                paren_count++;
-                s_head++;
-            } else {
-                type = Num;
-                if (is_num(s_head))
-                    val = read_num(&s_head);
-                else if (*s_head == '+' && is_num(s_head + 1)) {
-                    s_head++;
-                    val = read_num(&s_head);
-                } else if (*s_head == '-' && is_num(s_head + 1)) {
-                    s_head++;
-                    val = 0 - read_num(&s_head);
-                } else
-                    goto error_char;
-                expect_num = !expect_num;
-            }
+        int val = 0;
+        if (*s_head == '(') {
+            type = ParenLeft;
+            ++paren_count;
+            ++s_head;
+        } else if (*s_head == ')') {
+            type = ParenRight;
+            --paren_count;
+            ++s_head;
+        } else if (expect_num) {
+            type = Num;
+            if (is_num(*s_head))
+                val = read_num(&s_head);
+            else if (*s_head == '+' && is_num(*(s_head + 1))) {
+                ++s_head;
+                val = read_num(&s_head);
+            } else if (*s_head == '-' && is_num(*(s_head + 1))) {
+                ++s_head;
+                val = 0 - read_num(&s_head);
+            } else
+                goto error_char;
+            expect_num = !expect_num;
         } else {
             switch (*(s_head++)) {
             case '+':
@@ -89,22 +91,17 @@ TokenStream *tokenize(char *s) {
             case '<':
                 if (*s_head != '<')
                     goto error_char;
-                s_head++;
+                ++s_head;
                 type = OpShiftLeft;
                 break;
             case '>':
                 if (*s_head != '>')
                     goto error_char;
-                s_head++;
+                ++s_head;
                 type = OpShiftRight;
                 break;
-            case ')':
-                type = ParenRight;
-                paren_count--;
-                expect_num = !expect_num;
-                break;
             default:
-                s_head--;
+                --s_head;
                 goto error_char;
             }
             expect_num = !expect_num;
