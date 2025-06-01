@@ -10,6 +10,11 @@ typedef enum TokenType {
     OpMul,
     OpDiv,
     OpMod,
+    OpShiftLeft,
+    OpShiftRight,
+    OpAnd,
+    OpXor,
+    OpOr,
 } TokenType;
 
 typedef struct TokenNode {

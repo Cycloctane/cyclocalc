@@ -56,11 +56,8 @@ TokenStream *tokenize(char *s) {
                 } else if (*s_head == '-' && is_num(s_head + 1)) {
                     s_head++;
                     val = 0 - read_num(&s_head);
-                } else {
-                    fprintf(stderr, "Unexpected char '%c' at %ld\n", *s_head, s_head - s);
-                    free_tokens(dummy.next);
-                    return NULL;
-                }
+                } else
+                    goto error_char;
                 expect_num = !expect_num;
             }
         } else {
@@ -80,15 +77,35 @@ TokenStream *tokenize(char *s) {
             case '%':
                 type = OpMod;
                 break;
+            case '&':
+                type = OpAnd;
+                break;
+            case '|':
+                type = OpOr;
+                break;
+            case '^':
+                type = OpXor;
+                break;
+            case '<':
+                if (*s_head != '<')
+                    goto error_char;
+                s_head++;
+                type = OpShiftLeft;
+                break;
+            case '>':
+                if (*s_head != '>')
+                    goto error_char;
+                s_head++;
+                type = OpShiftRight;
+                break;
             case ')':
                 type = ParenRight;
                 paren_count--;
                 expect_num = !expect_num;
                 break;
             default:
-                fprintf(stderr, "Unexpected char '%c' at %ld\n", *(s_head - 1), s_head - 1 - s);
-                free_tokens(dummy.next);
-                return NULL;
+                s_head--;
+                goto error_char;
             }
             expect_num = !expect_num;
         }
@@ -106,6 +123,11 @@ TokenStream *tokenize(char *s) {
     TokenStream *tokens = malloc(sizeof(TokenStream));
     *tokens = (TokenStream){.head = dummy.next, .pos = dummy.next};
     return tokens;
+
+error_char:
+    fprintf(stderr, "Unexpected char '%c' at %ld\n", *s_head, s_head - s);
+    free_tokens(dummy.next);
+    return NULL;
 }
 
 void free_tokenstream(TokenStream *tokens) {

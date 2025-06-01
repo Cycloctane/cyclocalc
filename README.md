@@ -2,6 +2,12 @@
 
 Simple mathematical expression evaluator based on Pratt Parsing.
 
+Supported operators:
+
+- Arithmetic: `+ - * / %`
+- Bitwise: `| & ^ << >>`
+- Parentheses: `( )`
+
 ### build
 
 ```bash

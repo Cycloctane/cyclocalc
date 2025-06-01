@@ -5,14 +5,31 @@ static void get_bp(TokenType type, int *left, int *right) {
     switch (type) {
     case OpAdd:
     case OpSub:
-        *left = 10;
-        *right = 11;
+        *left = 100;
+        *right = 101;
         return;
     case OpMul:
     case OpDiv:
     case OpMod:
+        *left = 110;
+        *right = 111;
+        return;
+    case OpShiftLeft:
+    case OpShiftRight:
+        *left = 40;
+        *right = 41;
+        return;
+    case OpAnd:
+        *left = 30;
+        *right = 31;
+        return;
+    case OpXor:
         *left = 20;
         *right = 21;
+        return;
+    case OpOr:
+        *left = 10;
+        *right = 11;
         return;
     default:
         *left = -1;
@@ -70,6 +87,16 @@ int eval_ast(ASTNode *root) {
         return eval_ast(root->left) / eval_ast(root->right);
     case OpMod:
         return eval_ast(root->left) % eval_ast(root->right);
+    case OpShiftLeft:
+        return eval_ast(root->left) << eval_ast(root->right);
+    case OpShiftRight:
+        return eval_ast(root->left) >> eval_ast(root->right);
+    case OpAnd:
+        return eval_ast(root->left) & eval_ast(root->right);
+    case OpXor:
+        return eval_ast(root->left) ^ eval_ast(root->right);
+    case OpOr:
+        return eval_ast(root->left) | eval_ast(root->right);
     default:
         return 0;
     }
