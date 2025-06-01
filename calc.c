@@ -30,9 +30,10 @@ ASTNode *parse(TokenStream *tokens, int bp) {
     if (next->type == Num) {
         root_node = malloc(sizeof(ASTNode));
         *root_node = (ASTNode){.type = Num, .val = next->val, .left = NULL, .right = NULL};
-    } else if (next->type == ParenLeft)
+    } else if (next->type == ParenLeft) {
         root_node = parse(tokens, 0);
-    else
+        next_token(tokens);
+    } else
         return NULL;
 
     while (1) {

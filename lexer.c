@@ -83,6 +83,7 @@ TokenStream *tokenize(char *s) {
             case ')':
                 type = ParenRight;
                 paren_count--;
+                expect_num = !expect_num;
                 break;
             default:
                 fprintf(stderr, "Unexpected char '%c' at %ld\n", *(s_head - 1), s_head - 1 - s);
