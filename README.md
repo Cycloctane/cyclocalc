@@ -19,3 +19,12 @@ make cyclocalc
 ```bash
 ./cyclocalc "6 * (3 + 4)"
 ```
+
+repl:
+
+```
+$ ./cyclocalc
+(calc)> 6 * (3 + 4)
+42
+(calc)>
+```
