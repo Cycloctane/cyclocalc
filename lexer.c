@@ -2,20 +2,14 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 static inline bool is_num(char c) { return c <= '9' && c >= '0'; }
 
 static int read_num(char **s_addr) {
-    char *s = *s_addr, *base = *s_addr;
-    while (is_num(*s))
-        ++s;
-    short n_digit = s - base;
-    char n_str[n_digit + 1];
-    memcpy(n_str, base, n_digit);
-    n_str[n_digit] = 0;
-    *s_addr = s;
-    return atoi(n_str);
+    int num = 0;
+    while (is_num(**s_addr))
+        num = num * 10 + *(*s_addr)++ - '0';
+    return num;
 }
 
 static void free_tokens(TokenNode *head) {
@@ -63,7 +57,7 @@ TokenStream *tokenize(char *s) {
                 goto error_char;
             expect_num = !expect_num;
         } else {
-            switch (*(s_head++)) {
+            switch (*s_head++) {
             case '+':
                 type = OpAdd;
                 break;
