@@ -4,7 +4,7 @@
 #include "lexer.h"
 
 typedef struct ASTNode {
-    int val;
+    long long val;
     TokenType type;
     struct ASTNode *left;
     struct ASTNode *right;
@@ -12,10 +12,10 @@ typedef struct ASTNode {
 
 ASTNode *parse(TokenStream *tokens, int bp);
 
-int eval_ast(ASTNode *root);
+long long eval_ast(ASTNode *root);
 
 void free_ast(ASTNode *root);
 
-int calc(TokenStream *tokens);
+long long calc(TokenStream *tokens);
 
 #endif

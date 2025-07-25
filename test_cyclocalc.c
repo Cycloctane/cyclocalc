@@ -6,16 +6,18 @@ static void test_tokenize_fail(char *s) {
     assert(!tokens);
 }
 
-static void test_eval(char *s, int val) {
+static void test_eval(char *s, long long val) {
     TokenStream *tokens = tokenize(s);
     assert(tokens);
-    int ret = calc(tokens);
+    long long ret = calc(tokens);
     free_tokenstream(tokens);
     assert(ret == val);
 }
 
 int main(){
     test_eval("", 0);
+    test_eval("9223372036854775807", 9223372036854775807);
+    test_eval("-9223372036854775808", -9223372036854775807 - 1);
     test_eval("1", 1);
     test_eval(" -42 ", -42);
     test_eval("+42", 42);

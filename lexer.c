@@ -5,8 +5,8 @@
 
 static inline bool is_num(char c) { return c <= '9' && c >= '0'; }
 
-static int read_num(char **s_addr) {
-    int num = 0;
+static long long read_num(char **s_addr) {
+    long long num = 0;
     while (is_num(**s_addr))
         num = num * 10 + *(*s_addr)++ - '0';
     return num;
@@ -34,7 +34,7 @@ TokenStream *tokenize(char *s) {
             break;
 
         TokenType type;
-        int val = 0;
+        long long val = 0;
         if (*s_head == '(') {
             type = ParenLeft;
             ++paren_count;

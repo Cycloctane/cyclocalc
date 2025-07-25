@@ -8,7 +8,7 @@ static int eval(char *s) {
     TokenStream *tokens = tokenize(s);
     if (!tokens)
         return 1;
-    printf("%d\n", calc(tokens));
+    printf("%lld\n", calc(tokens));
     free_tokenstream(tokens);
     return 0;
 }

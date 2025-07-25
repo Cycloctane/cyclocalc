@@ -71,7 +71,7 @@ ASTNode *parse(TokenStream *tokens, int bp) {
     return root_node;
 }
 
-int eval_ast(ASTNode *root) {
+long long eval_ast(ASTNode *root) {
     if (!root)
         return 0;
     switch (root->type) {
@@ -110,11 +110,11 @@ void free_ast(ASTNode *root) {
     free(root);
 }
 
-int calc(TokenStream *tokens) {
+long long calc(TokenStream *tokens) {
     ASTNode *ast = parse(tokens, 0);
     if (!ast)
         return 0;
-    int ret = eval_ast(ast);
+    long long ret = eval_ast(ast);
     free_ast(ast);
     return ret;
 }

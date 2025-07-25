@@ -18,7 +18,7 @@ typedef enum TokenType {
 } TokenType;
 
 typedef struct TokenNode {
-    int val;
+    long long val;
     TokenType type;
     struct TokenNode *next;
 } TokenNode;
