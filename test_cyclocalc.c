@@ -9,9 +9,17 @@ static void test_tokenize_fail(char *s) {
 static void test_eval(char *s, int val) {
     TokenStream *tokens = tokenize(s);
     assert(tokens);
-    int ret = calc(tokens);
+    CalcResult ret = calc(tokens);
     free_tokenstream(tokens);
-    assert(ret == val);
+    assert(ret.val == val);
+}
+
+static void test_eval_fail(char *s, CalcError err) {
+    TokenStream *tokens = tokenize(s);
+    assert(tokens);
+    CalcResult ret = calc(tokens);
+    free_tokenstream(tokens);
+    assert(ret.err == err);
 }
 
 int main(){
@@ -44,4 +52,9 @@ int main(){
     test_tokenize_fail("100 --");
     test_tokenize_fail("1 < 2");
     test_tokenize_fail("@");
+
+    test_eval_fail("1 / 0", ErrorZeroDivision);
+    test_eval_fail("1 % 0", ErrorZeroDivision);
+    test_eval_fail("1 << -1", ErrorNegativeShift);
+    test_eval_fail("1 >> -2", ErrorNegativeShift);
 }

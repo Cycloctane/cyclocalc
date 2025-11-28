@@ -1,4 +1,5 @@
 #include "calc.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 static void get_bp(TokenType type, int *left, int *right) {
@@ -71,35 +72,72 @@ ASTNode *parse(TokenStream *tokens, int bp) {
     return root_node;
 }
 
-int eval_ast(ASTNode *root) {
+CalcResult eval_ast(ASTNode *root) {
     if (!root)
-        return 0;
+        return (CalcResult){NoError, 0};
+    if (root->type == Num)
+        return (CalcResult){NoError, root->val};
+
+    CalcResult left = eval_ast(root->left);
+    if (left.err)
+        return left;
+    CalcResult right = eval_ast(root->right);
+    if (right.err)
+        return right;
+
+    CalcResult res = {.err = NoError};
     switch (root->type) {
-    case Num:
-        return root->val;
     case OpAdd:
-        return eval_ast(root->left) + eval_ast(root->right);
+        res.val = left.val + right.val;
+        break;
     case OpSub:
-        return eval_ast(root->left) - eval_ast(root->right);
+        res.val = left.val - right.val;
+        break;
     case OpMul:
-        return eval_ast(root->left) * eval_ast(root->right);
+        res.val = left.val * right.val;
+        break;
     case OpDiv:
-        return eval_ast(root->left) / eval_ast(root->right);
+        if (right.val == 0) {
+            res.err = ErrorZeroDivision;
+            fprintf(stderr, "Division by zero: %d / 0\n", left.val);
+        } else
+            res.val = left.val / right.val;
+        break;
     case OpMod:
-        return eval_ast(root->left) % eval_ast(root->right);
+        if (right.val == 0) {
+            res.err = ErrorZeroDivision;
+            fprintf(stderr, "Division by zero: %d %% 0\n", left.val);
+        } else
+            res.val = left.val % right.val;
+        break;
     case OpShiftLeft:
-        return eval_ast(root->left) << eval_ast(root->right);
+        if (right.val < 0) {
+            res.err = ErrorNegativeShift;
+            fprintf(stderr, "Negative shifts: %d << %d\n", left.val, right.val);
+        } else
+            res.val = left.val << right.val;
+        break;
     case OpShiftRight:
-        return eval_ast(root->left) >> eval_ast(root->right);
+        if (right.val < 0) {
+            res.err = ErrorNegativeShift;
+            fprintf(stderr, "Negative shifts: %d >> %d\n", left.val, right.val);
+        } else
+            res.val = left.val >> right.val;
+        break;
     case OpAnd:
-        return eval_ast(root->left) & eval_ast(root->right);
+        res.val = left.val & right.val;
+        break;
     case OpXor:
-        return eval_ast(root->left) ^ eval_ast(root->right);
+        res.val = left.val ^ right.val;
+        break;
     case OpOr:
-        return eval_ast(root->left) | eval_ast(root->right);
+        res.val = left.val | right.val;
+        break;
     default:
-        return 0;
+        res.err = ErrorInvalidOp;
+        fputs("Invalid operator\n", stderr);
     }
+    return res;
 }
 
 void free_ast(ASTNode *root) {
@@ -110,11 +148,11 @@ void free_ast(ASTNode *root) {
     free(root);
 }
 
-int calc(TokenStream *tokens) {
+CalcResult calc(TokenStream *tokens) {
     ASTNode *ast = parse(tokens, 0);
     if (!ast)
-        return 0;
-    int ret = eval_ast(ast);
+        return (CalcResult){NoError, 0};
+    CalcResult ret = eval_ast(ast);
     free_ast(ast);
     return ret;
 }

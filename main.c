@@ -8,9 +8,11 @@ static int eval(char *s) {
     TokenStream *tokens = tokenize(s);
     if (!tokens)
         return 1;
-    printf("%d\n", calc(tokens));
+    CalcResult result = calc(tokens);
+    if (!result.err)
+        printf("%d\n", result.val);
     free_tokenstream(tokens);
-    return 0;
+    return result.err != NoError;
 }
 
 int main(int argc, char **argv) {

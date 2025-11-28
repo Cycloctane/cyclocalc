@@ -10,12 +10,24 @@ typedef struct ASTNode {
     struct ASTNode *right;
 } ASTNode;
 
+typedef enum CalcError {
+    NoError = 0,
+    ErrorInvalidOp,
+    ErrorZeroDivision,
+    ErrorNegativeShift,
+} CalcError;
+
+typedef struct CalcResult {
+    CalcError err;
+    int val;
+} CalcResult;
+
 ASTNode *parse(TokenStream *tokens, int bp);
 
-int eval_ast(ASTNode *root);
+CalcResult eval_ast(ASTNode *root);
 
 void free_ast(ASTNode *root);
 
-int calc(TokenStream *tokens);
+CalcResult calc(TokenStream *tokens);
 
 #endif
