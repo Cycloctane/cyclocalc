@@ -40,6 +40,7 @@ int main(){
     test_tokenize_fail("3 * (2 + 4 ");
     test_tokenize_fail("3 * 2 + 4)");
     test_tokenize_fail("3 * )2 + 4");
+    test_tokenize_fail(") 2 + 4");
     test_tokenize_fail("100 --");
     test_tokenize_fail("1 < 2");
     test_tokenize_fail("@");

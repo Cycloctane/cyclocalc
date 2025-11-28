@@ -40,6 +40,8 @@ TokenStream *tokenize(char *s) {
             ++paren_count;
             ++s_head;
         } else if (*s_head == ')') {
+            if (paren_count == 0)
+                goto error_char;
             type = ParenRight;
             --paren_count;
             ++s_head;
